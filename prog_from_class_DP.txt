@@ -1,0 +1,103 @@
+# Dynamic Programming implementation of LCS problem
+
+def lcs(X, Y):
+    # find the length of the strings
+    m = len(X)
+    n = len(Y)
+
+    # declaring the array for storing the dp values
+    L = [[None] * (n + 1) for i in range(m + 1)]
+
+    """Following steps build L[m+1][n+1] in bottom up fashion
+    Note: L[i][j] contains length of LCS of X[0..i-1]
+    and Y[0..j-1]"""
+    for i in range(m + 1):
+        for j in range(n + 1):
+            if i == 0 or j == 0:
+                L[i][j] = 0
+            elif X[i - 1] == Y[j - 1]:
+                L[i][j] = L[i - 1][j - 1] + 1
+            else:
+                L[i][j] = max(L[i - 1][j], L[i][j - 1])
+
+    # L[m][n] contains the length of LCS of X[0..n-1] & Y[0..m-1]
+    return L[m][n]
+
+
+# A Dynamic Programming based Python program for edit
+# distance problem
+
+# checks each character in both strings and fills a table to say how
+# many operations need to be performed at each change, if none needed, copy
+# however many operations needed in the last step
+# parameters are: first word, second word, length of first word, length of second word
+def editDistDP(str1, str2, m, n):
+    # Create a table to store results of subproblems
+    dp = [[0 for x in range(n + 1)] for x in range(m + 1)]  # sets the first index of each string in the table to 0
+
+    # Fill d[][] in bottom up manner
+    for i in range(m + 1):
+        for j in range(n + 1):
+
+            # If first string is empty, only option is to
+            # insert all characters of second string
+            if i == 0:
+                dp[i][j] = j  # Min. operations = j
+
+            # If second string is empty, only option is to
+            # remove all characters of second string
+            elif j == 0:
+                dp[i][j] = i  # Min. operations = i
+
+            # If last characters are same, ignore last char
+            # and recur for remaining string
+            elif str1[i - 1] == str2[j - 1]:
+                dp[i][j] = dp[i - 1][j - 1]
+
+            # If last character are different, consider all
+            # possibilities and find minimum
+            else:
+                dp[i][j] = 1 + min(dp[i][j - 1],  # Insert
+                                   dp[i - 1][j],  # Remove
+                                   dp[i - 1][j - 1])  # Replace
+
+    return dp[m][n]
+
+
+def old_main():
+    pool = ['goose', 'cat', 'danger', 'panic']
+    word = input("Please enter a word from the list:\n{0}.\n".format(pool))
+    # check for LCS between each word in the pool and the user's word and
+    # create a dictionary comprehension of results
+    # for each w in pool, get lcs between word and w
+    results = {w: lcs(w, word) for w in pool}
+    # sort dictionary on its values
+    # reverse = True means sort in reverse so largest val first
+    results = {k: v for k, v in sorted(results.items(),
+                                       key=lambda item: item[1], reverse=True)}
+    commonality = list(results.items())[0][1]  # get LCS of assumed answer
+    if commonality > len(word) / 2:  # if common letters is more than half entry length
+        print("I think you meant", list(results.keys())[0])
+    else:  # lcs not high enough to be confident
+        print("I have no idea what you  meant.")
+
+
+def main():
+    pool = ['goose', 'cat', 'danger', 'panic']
+    word = input("Please enter a word from the list:\n{0}.\n".format(pool))
+    word = word.lower()  # convert to lower case so caps isn't a step
+
+    # returns a list with the edit distance between the input word and each word in the pool
+    results = {w: editDistDP(word, w, len(word), len(w)) for w in pool}
+    # sorts the results list from least to greatest edit dist
+    results = {k: v for k, v in sorted(results.items(), key=lambda item: item[1])} 
+    commonality = list(results.items())[0][1]  # get edit dist of assumed answer
+    print(commonality)
+    if commonality < len(word) / 2:  # if common letters is more than half entered word length
+        print("I think you meant", list(results.keys())[0])
+    else:
+        print("I have no idea what you  meant.")
+
+
+if __name__ == "__main__":
+    main()
