@@ -19,6 +19,11 @@ def process_file(fname, enc):
     return dat_str.split()
 
 
+def percent_different(x, y):
+    percent = (x / y) * 100
+    return round(percent, 1)
+
+
 def main():
     lcsf = "lcs-DP.txt"
     edit_distf = "edit_distance_DP.txt"
@@ -31,17 +36,29 @@ def main():
     # for testing:
     # print(lcs_code)
 
+    lcs_lcs = lcs(class_code, lcs_code)
+    lcs_edit_dist = lcs(class_code, edit_dist_code)
+    ed_lcs = editDistDP(class_code, lcs_code, len(class_code), len(lcs_code))
+    ed_edit_dist = editDistDP(class_code, edit_dist_code, len(class_code), len(edit_dist_code))
+
     print("\nThe LCS between the modifications done in class and the original lcs code copied from online"
-          " is {0}".format(lcs(class_code, lcs_code)))
+          " is {0}".format(lcs_lcs))
     print("The LCS between the modifications done in class and the original edit distance code copied from online"
-          " is {0}".format(lcs(class_code, edit_dist_code)))
+          " is {0}".format(lcs_edit_dist))
 
     print("\nThe edit distance between the modifications done in class and the original lcs code copied from online"
-          " is {0}".format(editDistDP(class_code, lcs_code, len(class_code), len(lcs_code))))
+          " is {0}".format(ed_lcs))
 
     print("The edit distance between the modifications done in class and the original edit distance code "
-          "copied from online is {0}".format(editDistDP(class_code, edit_dist_code, len(class_code),
-                                                        len(edit_dist_code))))
+          "copied from online is {0}".format(ed_edit_dist))
+
+    print("\nThe length of the class code is {0} chars. The length of the original lcs code is {1}. "
+          "Based on the edit distance of {2}, the class code is {3}% different than the original lcs code."
+          .format(len(class_code), len(lcs_code), ed_lcs, percent_different(ed_lcs, len(class_code))))
+
+    print("\nThe length of the class code is {0} chars. The length of the original edit distance code is {1}. "
+          "Based on the edit distance of {2}, the class code is {3}% different than the original edit distance code."
+          .format(len(class_code), len(edit_dist_code), ed_edit_dist, percent_different(ed_edit_dist, len(class_code))))
 
 
 if __name__ == "__main__":
